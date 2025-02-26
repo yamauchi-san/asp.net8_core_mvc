@@ -1,0 +1,18 @@
+﻿@* URLパス/HelloWorldのページ *@
+
+@* ここでプレースホルダを指定できる *@
+@* ここで指定したプレースホルダは_Layout.cshtmlなどで適応される *@
+@{
+    ViewData["Title"] = "Movie List";
+}
+
+@* @{
+    ViewData["Title"] = "dosukoi";
+} *@
+
+<h2>My Movie List</h2>
+
+<p>Hello from our View Template!</p>
+<p>dosukoi</p>
+@* コントローラファイルで作成したプレースホルダを適応する *@
+<p>@ViewData["Comment"]</p>

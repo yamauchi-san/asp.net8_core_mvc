@@ -1,0 +1,14 @@
+﻿@* プレースホルダを作成_Layout.cshtmlで表示させる *@
+@{
+	ViewData["Title"] = "Welcome";
+}
+
+<h2>Welcome</h2>
+
+@* プレースホルダの表示とビューテンプレート(テンプレートタグ)による繰り返し処理 *@
+<ul>
+	@for (int i = 0; i < (int)ViewData["NumTimes"]!; i++)
+	{
+		<li>@ViewData["Message"]</li>
+	}
+</ul>
