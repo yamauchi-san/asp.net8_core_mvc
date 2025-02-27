@@ -26,4 +26,7 @@ public class Movie
     // Entity Framework Core がデータベースの通貨と Price を正しくマッピングできるようにする
     [Column(TypeName = "decimal(18, 2)")]
     public decimal Price { get; set; }
+
+    // 新しいフィールド評価を示すRatingを追加
+    public string? Rating { get; set; }
 }
