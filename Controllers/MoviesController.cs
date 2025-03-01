@@ -30,14 +30,18 @@ namespace MvcMovie.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                //return NotFound();
+                return RedirectToAction("NotFoundPage", "ErrorDetail", new { message = "ハッカーか(・ω・)?通報するぞ。警察も頼りないが....." });
             }
 
             var movie = await _context.Movie
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
-                return NotFound();
+                //return NotFound();
+                // RedirectToActionメソッドの引数は(メソッド、コントローラーファイル(..Controller.csは除く)、パラメーター)
+                // RedirectToActionメソッドの引数はこちらでも表現できる(Veiws/Shared配下のディレクトリ,.cshtmlファイル名,パラメーター)
+                return RedirectToAction("NotFoundPage", "ErrorDetail", new { message = "指定された映画は見つかりませんでした。" });
             }
 
             return View(movie);
