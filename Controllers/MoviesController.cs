@@ -20,10 +20,49 @@ namespace MvcMovie.Controllers
         }
 
         // GET: Movies
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Movie.ToListAsync());
+        //}
+
+        //[HttpPost]
+        //public string Index(string searchString, bool notUsed)
+        //{
+        //    return "From [HttpPost]Index: filter on " + searchString;
+        //}
+        public async Task<IActionResult> Index(string searchString, string movieGenre)
         {
-            return View(await _context.Movie.ToListAsync());
+            // すべてのジャンルを取得
+            var genreQuery = _context.Movie.OrderBy(m => m.Genre).Select(m => m.Genre).Distinct();
+
+            // 映画リストを取得（検索条件があれば適用）
+            var movies = from m in _context.Movie
+                         select m;
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                movies = movies.Where(s => s.Title!.ToUpper().Contains(searchString.ToUpper()));
+            }
+
+            if (!string.IsNullOrEmpty(movieGenre))
+            {
+                movies = movies.Where(x => x.Genre == movieGenre);
+            }
+
+            // ビューモデルを作成
+            // MovieGenreViewModelのインスタンス化
+            var movieGenreVM = new MovieGenreViewModel
+            {
+                Genres = new SelectList(await genreQuery.ToListAsync()), // ドロップダウンリスト用のジャンルデータ
+                Movies = await movies.ToListAsync(), // フィルタリングされた映画リスト
+                SearchString = searchString, // フォームの検索文字列
+                MovieGenre = movieGenre // 選択されたジャンル
+            };
+
+            // インスタンス変数をIndex.cshtmlに渡している
+            return View(movieGenreVM); // ✅ 修正: MovieGenreViewModel をビューに渡す
         }
+
 
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
