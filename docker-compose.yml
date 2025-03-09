@@ -1,0 +1,36 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_container
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Dodosukoi100kg"
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sql_data:/var/opt/mssql
+    # healthcheck:
+    #   test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Dodosukoi100kg", "-Q", "SELECT 1"]
+    #   interval: 10s
+    #   retries: 5
+    #   start_period: 30s
+
+  mvcmovie:
+    image: mvcmovie:latest
+    container_name: mvcmovie
+    depends_on:
+      sqlserver:
+        condition: service_healthy  # ✅ SQL Server の起動を待つ！
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MVCMovieDB;User Id=sa;Password=Dodosukoi100kg;
+      # - ConnectionStrings__MvcMovieContext=Server=sqlserver;Database=MVCMovieDB;User Id=sa;Password=Dodosukoi100kg;
+    volumes:
+      - .:/app
+    # restart: always  # ✅ mvcmovie コンテナが落ちても自動で再起動
+
+volumes:
+  sql_data:
