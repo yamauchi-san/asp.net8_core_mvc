@@ -3,3 +3,4 @@ obj/
 *.cache
 bin/
 memo.yml
+backup/
