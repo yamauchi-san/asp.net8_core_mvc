@@ -1,0 +1,46 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dev
+
+# 開発環境変数の設定
+ENV ASPNETCORE_ENVIRONMENT=Development \
+    ASPNETCORE_HTTP_PORTS=8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true
+
+# ユーザーIDの設定（必要に応じて）
+ENV APP_UID=1654
+
+# アプリケーションディレクトリを作成
+WORKDIR /app
+
+# 作業ディレクトリにソースをコピー
+COPY . .
+
+# デバッグ用のツールをインストール
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    procps \
+    curl \
+    wget \
+    vim \
+    nano \
+    less \
+    iputils-ping \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/* && \
+    # dotnet efツールをインストール
+    dotnet tool install --global dotnet-ef
+    # 注: データベースマイグレートはコンテナ内から手動で実行してください
+    # コンテナ起動後に以下のコマンドを実行:
+    # docker exec -it mvc_movie bash
+    # dotnet ef database update
+    # 自動ならこちら(但し、sqlserverの起動が確認出来てから動作させるようにしないとエラー)
+    # dotnet ef database update
+
+# PATH設定を追加してdotnet efコマンドを使えるようにする
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# dotnet watch を使用して開発モードで実行
+EXPOSE 8080
+EXPOSE 8081
+
+# ダミー常駐プロセスを追加して、コンテナが停止しないようにする
+ENTRYPOINT ["tail", "-f", "/dev/null"]
