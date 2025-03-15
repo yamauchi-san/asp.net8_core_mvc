@@ -1,30 +1,44 @@
-# デバッグ コンテナーをカスタマイズする方法と、Visual Studio がこの Dockerfile を使用してより高速なデバッグのためにイメージをビルドする方法については、https://aka.ms/customizecontainer をご覧ください。
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
 
-# このステージは、VS から高速モードで実行するときに使用されます (デバッグ構成の既定値)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+# プロジェクトファイルをコピーして依存関係を復元
+COPY ["MvcMovie.csproj", "./"]
+RUN dotnet restore "MvcMovie.csproj"
+
+# ソースコードをコピーしてビルド
+COPY . .
+RUN dotnet build "MvcMovie.csproj" -c Release -o /app/build
+
+# 公開
+FROM build AS publish
+RUN dotnet publish "MvcMovie.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# 最終イメージ
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+ENV APP_UID=1654 \
+    ASPNETCORE_HTTP_PORTS=8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true
+
+# ユーザー作成部分を条件付きで実行（既存のグループがない場合のみ作成）
+RUN if ! getent group app; then \
+        groupadd --gid=$APP_UID app; \
+    fi && \
+    if ! getent passwd app; then \
+        useradd -l --uid=$APP_UID --gid=$APP_UID --create-home app; \
+    fi
+
 WORKDIR /app
+COPY --from=publish /app/publish .
+
+# 実行権限の設定
+RUN chown -R $APP_UID:$APP_UID /app
+
+# 必要なポートを公開
 EXPOSE 8080
 EXPOSE 8081
 
+# 非root権限ユーザーに切り替え
+USER $APP_UID
 
-# このステージは、サービス プロジェクトのビルドに使用されます
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["MvcMovie.csproj", "."]
-RUN dotnet restore "./MvcMovie.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./MvcMovie.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-# このステージは、最終ステージにコピーするサービス プロジェクトを公開するために使用されます
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./MvcMovie.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-# このステージは、運用環境または VS から通常モードで実行している場合に使用されます (デバッグ構成を使用しない場合の既定)
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app/publish .
+# コンテナ起動時に実行されるコマンド
 ENTRYPOINT ["dotnet", "MvcMovie.dll"]
