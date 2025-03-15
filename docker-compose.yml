@@ -1,36 +1,52 @@
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver_container
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "Dodosukoi100kg"
-      ACCEPT_EULA: "Y"
+  mvc_movie:
+    build:
+      context: .
+      # 開発用のDockerfileを指定。本番環境ならDockerfileを指定又はイメージを指定
+      dockerfile: Dockerfile.dev 
+    container_name: mvc_movie
     volumes:
-      - sql_data:/var/opt/mssql
-    # healthcheck:
-    #   test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Dodosukoi100kg", "-Q", "SELECT 1"]
-    #   interval: 10s
-    #   retries: 5
-    #   start_period: 30s
-
-  mvcmovie:
-    image: mvcmovie:latest
-    container_name: mvcmovie
-    depends_on:
-      sqlserver:
-        condition: service_healthy  # ✅ SQL Server の起動を待つ！
+      - .:/app  # ローカルのソースコードをコンテナにマウント
+      - /app/bin
+      - /app/obj
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8080:8080" # ローカルとコンテナのポートマッピング
+      - "8081:8081" # 予備
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=MVCMovieDB;User Id=sa;Password=Dodosukoi100kg;
-      # - ConnectionStrings__MvcMovieContext=Server=sqlserver;Database=MVCMovieDB;User Id=sa;Password=Dodosukoi100kg;
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__MvcMovieContext=Server=sqlserver,1433;Database=MvcMovieDB;User Id=sa;Password=Dosukoi100kg@;TrustServerCertificate=True;
+    networks:
+      - mvc-network
+    depends_on:
+      - sqlserver
+    # コンテナを実行し続けるための設定（追加の保険）
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    # カスタムコマンドでアプリケーションを明示的に起動（必要に応じて使用）
+    # command: dotnet watch run --urls=http://+:8080
+
+  sqlserver:
+    # Dockerfileを作成してそこにsqlcmdをインストールする処理も書くのも有り
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      # ローカル環境は1434、コンテナの方は1433(標準ポート)でマッピング
+      - "1434:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Dosukoi100kg@
+      - MSSQL_PID=Express
     volumes:
-      - .:/app
-    # restart: always  # ✅ mvcmovie コンテナが落ちても自動で再起動
+      - sql_data:/var/opt/mssql
+    networks:
+      - mvc-network
+    restart: unless-stopped
 
 volumes:
   sql_data:
+
+networks:
+  mvc-network:
+    driver: bridge
