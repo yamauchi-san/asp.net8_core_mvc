@@ -1,5 +1,8 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+@* <html lang="en"> *@
+@* <html lang="ja"> *@
+@* 動的に言語を認識。ASP.NET Core MVCで使えるlang属性 *@
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +12,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MvcMovie.styles.css" asp-append-version="true" />
+    @* トップページの用のスタイルを追加 *@
+    <link rel="stylesheet" href="~/Views/Home/Index.cshtml.css" asp-append-version="true" />
 </head>
 <body>
     <header>
