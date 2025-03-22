@@ -12,10 +12,11 @@ services:
     ports:
       - "8080:8080" # ローカルとコンテナのポートマッピング
       - "8081:8081" # 予備
+    # .envファイルから呼び出す(ASP.NET Core MVCは.envを標準で読みる)
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__MvcMovieContext=Server=sqlserver,1433;Database=MvcMovieDB;User Id=sa;Password=Dosukoi100kg@;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT
+      - ASPNETCORE_URLS
+      - ConnectionStrings__MvcMovieContext
     networks:
       - mvc-network
     depends_on:
