@@ -2,8 +2,30 @@
     ViewData["Title"] = "Home Page";
 }
 @* ドキュメントルートのビューファイル *@
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@* BootstrapのスタイルとオリジナルCSSの混在*@
+@* display-4,white,white-small,green,blackはオリジナルCSS *@
+<div class="background">
+    <div class="text-center">
+        <h1 class="display-4">はじめまして</h1>
+        <br>
+        <p class="white">ここでは、ASP.NET Core MVC .NET8の成果物を表示しています。</p>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 white-small">
+                    <p class="green">説明: 以下の事を学んできました。</p>
+                    <p>1. ASP.NET Core MVCの概要</p>
+                    <p>2. アプリにコントローラーを追加する</p>
+                    <p>3. アプリへのビューの追加</p>
+                    <p>4. アプリにモデルを追加する</p>
+                    <p>5. アプリでのデータベースの操作</p>
+                    <p>6. コントローラーのメソッドとビュー(タグヘルパーとフロントエンドセキュリティ)</p>
+                    <p>7. アプリへの検索の追加(ビューモデルファイルの実装)</p>
+                    <p>8. アプリへの新しいフィールドの追加(モデルファイルにフィールドを追加とマイグレート)</p>
+                    <p>9. アプリに検証を追加する(バリデーション)</p>
+                    <p>10. アプリのDetailsメソッドとDeleteメソッドの確認(RedirectToActionメソッドの学習)</p>
+            </div>
+        </div>
+    </div>
+    <p class="black">ASP.NET Core MVCアプリ開発を学ぶ <a href="https://learn.microsoft.com/aspnet/core">ASP.NET 公式ドキュメント</a>.</p>
 </div>
