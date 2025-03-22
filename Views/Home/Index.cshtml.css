@@ -1,0 +1,69 @@
+/* トップページ(ドキュメントルート)のスタイルシート */
+
+h1.display-4 {
+    color: yellow;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid white;
+}
+
+/* 背景にアニメーションを追加する */
+/* ２つの背景色を等間隔で変更する為に分ける */
+@keyframes gradient-animation {
+    0%   { background: linear-gradient(225deg, #205cc2 0%, #6284FF 26%, #ff7d00 75%, #5ae30a 100%); }
+    49.999% { background: linear-gradient(225deg, #205cc2 0%, #6284FF 26%, #ff7d00 75%, #5ae30a 100%); }
+
+    50%  { background: linear-gradient(315deg, #f10a45 0%, #f1be07 38%, #0b2ce9 66%, #05a304 100%); }
+    100% { background: linear-gradient(315deg, #f10a45 0%, #f1be07 38%, #0b2ce9 66%, #05a304 100%); }
+}
+
+
+.background {
+    /* 青系の背景色 */
+    /* background-color: #92b5ec; */
+
+    /* Gradient Generatorのメニュー->背景->Grabient->グラデーションの開始と終了を選択 */
+    /* background-color: #FFFFFF;
+    background-image: linear-gradient(180deg, #FFFFFF 0%, #6284FF 38%, #ff7d00 83%); */
+    /* background-color: #205cc2;
+    background-image: linear-gradient(180deg, #205cc2 0%, #6284FF 26%, #ff7d00 75%, #5ae30a 100%); */
+
+    background-size: 400% 400%;
+    /* アニメーションを指定、間隔、アニメーションの進行速度(加速->減速)、無限を記述 */
+    animation: gradient-animation 15s ease infinite;
+
+    /* vhとはviewport heightの事 これでデバイスの高さに調整*/
+    height: 100vh;
+    width: auto;
+}
+
+.white {
+    color: white;
+    font-size: 17px;
+}
+
+.white-small {
+    color: white;
+    font-size: 14px;
+}
+
+.white-small p{
+    margin-left: 20px;
+}
+
+.green {
+    color: #191c1a;
+    font-weight: lighter;
+    font-size: large;
+}
+
+.black {
+    color: black;
+    font-size: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
